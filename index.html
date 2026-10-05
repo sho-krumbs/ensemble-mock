@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F7F4EE">
+<title>Ensemble</title>
+<meta name="description" content="Love their style. Make it yours. Build a wardrobe inspired by the characters you love, at your budget.">
+
+<style>
+  :root {
+    --ground: #F7F4EE;
+    --paper: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-soft: #5B5955;
+    --ink-faint: #8C8A85;
+    --line: #E4E0D8;
+    --accent: #8A5A3C;
+    --accent-soft: #EFE4DA;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable", "Segoe UI", Roboto, sans-serif;
+    --radius: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font);
+    line-height: 1.6;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body { min-height: 100vh; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .nav {
+    padding: 22px clamp(20px, 5vw, 56px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .wordmark { font-size: 16px; font-weight: 600; letter-spacing: 0.01em; color: var(--ink); text-decoration: none; }
+  .nav-tag { font-size: 13px; color: var(--ink-faint); }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 56px); }
+
+  /* ---- Landing ---- */
+  .landing { padding: clamp(56px, 9vw, 96px) 0 clamp(48px, 7vw, 72px); }
+  .landing h1 {
+    font-size: clamp(30px, 5vw, 42px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    max-width: 16ch;
+    margin-bottom: 14px;
+  }
+  .landing .sub { color: var(--ink-soft); font-size: 17px; max-width: 48ch; margin-bottom: 40px; }
+
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .char-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+  }
+  .char-card:hover { border-color: var(--accent); }
+  .char-card .show { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+  .char-card .name { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .char-card .desc { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+
+  /* ---- Wardrobe view ---- */
+  .wardrobe-view { display: none; padding: clamp(32px, 5vw, 56px) 0 clamp(64px, 8vw, 96px); }
+  .wardrobe-view.active { display: block; }
+
+  .back-link {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--ink-faint);
+    text-decoration: none;
+    margin-bottom: 28px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+  .back-link:hover { color: var(--ink); }
+
+  .wardrobe-head { margin-bottom: 28px; }
+  .wardrobe-head .eyebrow { font-size: 13px; color: var(--ink-faint); margin-bottom: 8px; }
+  .wardrobe-head h2 { font-size: clamp(26px, 4vw, 32px); font-weight: 600; margin-bottom: 10px; }
+  .wardrobe-head .recipe { color: var(--ink-soft); font-size: 16px; max-width: 56ch; }
+
+  .budget-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 28px 0 8px;
+    flex-wrap: wrap;
+  }
+  .budget-label { font-size: 13px; color: var(--ink-faint); white-space: nowrap; }
+  .budget-tabs { display: flex; gap: 8px; }
+  .budget-tab {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .budget-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .result-line { font-size: 15px; color: var(--ink); font-weight: 600; margin: 20px 0 24px; }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .piece-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color 0.15s ease;
+  }
+  .piece-card:hover { border-color: var(--accent); }
+  .piece-swatch {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--ink-faint);
+    text-align: center;
+    padding: 12px;
+  }
+  .piece-body { padding: 14px 16px 16px; }
+  .piece-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.4; }
+  .piece-price { font-size: 14px; color: var(--ink-soft); }
+  .piece-stock { font-size: 12px; color: var(--accent); margin-top: 6px; }
+
+  .fit-note {
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+    margin-bottom: 24px;
+  }
+  .fit-note .label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .fit-note p { font-size: 15px; color: var(--ink-soft); max-width: 60ch; line-height: 1.6; }
+
+  .save-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .save-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .save-link:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px clamp(20px, 5vw, 56px);
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 480px) {
+    .budget-row { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="wordmark" id="homeLink">Ensemble</a>
+  <span class="nav-tag">Love their style. Make it yours.</span>
+</nav>
+
+<div class="wrap">
+
+  <section class="landing" id="landing">
+    <h1>Whose style do you keep noticing?</h1>
+    <p class="sub">Build a wardrobe inspired by the characters you love, at your budget.</p>
+
+    <div class="char-grid" id="charGrid"></div>
+  </section>
+
+  <section class="wardrobe-view" id="wardrobeView">
+    <button class="back-link" id="backLink">Back</button>
+
+    <div class="wardrobe-head">
+      <div class="eyebrow" id="wShow"></div>
+      <h2 id="wName"></h2>
+      <p class="recipe" id="wRecipe"></p>
+    </div>
+
+    <div class="budget-row">
+      <span class="budget-label">Budget</span>
+      <div class="budget-tabs" id="budgetTabs"></div>
+    </div>
+
+    <p class="result-line" id="resultLine"></p>
+
+    <div class="board" id="board"></div>
+
+    <div class="fit-note">
+      <div class="label">Here is why this fits</div>
+      <p id="fitText"></p>
+    </div>
+
+    <div class="save-row">
+      <a href="#" class="save-link">Save this wardrobe</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>Ensemble is a proof of concept. Mock data shown for layout and tone only.</footer>
+
+<script>
+  // ---- Mock data: 3 characters x 3 budget tiers each ----
+  const DATA = {
+    carmy: {
+      show: "The Bear",
+      name: "Carmy",
+      recipe: "Workwear basics, a neutral palette, relaxed fits.",
+      fit: "Carmy's style holds together through fabric weight and fit, not logos. Heavyweight cotton, straight lines, nothing fitted too close. The palette stays in white, grey and olive across every budget.",
+      tiers: {
+        150: {
+          items: [
+            { name: "White heavyweight tee", price: 28 },
+            { name: "Straight-leg trousers", price: 55 },
+            { name: "Canvas work boot", price: 62 }
+          ]
+        },
+        250: {
+          items: [
+            { name: "White heavyweight tee", price: 28 },
+            { name: "Cropped work jacket", price: 68 },
+            { name: "Straight-leg trousers", price: 55 },
+            { name: "Leather work shoes", price: 89 }
+          ]
+        },
+        500: {
+          items: [
+            { name: "White heavyweight tee (2-pack)", price: 42 },
+            { name: "Waxed canvas chore coat", price: 165 },
+            { name: "Straight-leg trousers", price: 55 },
+            { name: "Leather work boots", price: 178 },
+            { name: "Ribbed knit beanie", price: 32 }
+          ]
+        }
+      }
+    },
+    draper: {
+      show: "Mad Men",
+      name: "Don Draper",
+      recipe: "Tailored suiting, a charcoal and navy palette, narrow lapels.",
+      fit: "Don Draper's style holds together through structure, not variety. A single well-cut suit, a crisp white shirt and a narrow tie do more than a closet of separates. Every budget keeps the same three colors.",
+      tiers: {
+        150: {
+          items: [
+            { name: "Crisp white dress shirt", price: 48 },
+            { name: "Narrow silk tie", price: 35 },
+            { name: "Polished oxford shoe", price: 67 }
+          ]
+        },
+        250: {
+          items: [
+            { name: "Crisp white dress shirt", price: 48 },
+            { name: "Charcoal wool trouser", price: 72 },
+            { name: "Narrow silk tie", price: 35 },
+            { name: "Polished oxford shoe", price: 95 }
+          ]
+        },
+        500: {
+          items: [
+            { name: "Charcoal two-button suit jacket", price: 245 },
+            { name: "Charcoal wool trouser", price: 85 },
+            { name: "Crisp white dress shirt", price: 58 },
+            { name: "Narrow silk tie", price: 45 },
+            { name: "Polished oxford shoe", price: 95 }
+          ]
+        }
+      }
+    },
+    carlton: {
+      show: "The Fresh Prince of Bel-Air",
+      name: "Carlton Banks",
+      recipe: "Preppy layering, bold color, collegiate details.",
+      fit: "Carlton's style holds together through confidence in color and layering, a sweater vest over a collared shirt, never one piece alone. Every budget keeps a bright primary color somewhere in the outfit.",
+      tiers: {
+        150: {
+          items: [
+            { name: "Striped collared shirt", price: 42 },
+            { name: "Pleated chino trouser", price: 48 },
+            { name: "Penny loafer", price: 55 }
+          ]
+        },
+        250: {
+          items: [
+            { name: "Argyle sweater vest", price: 58 },
+            { name: "Striped collared shirt", price: 42 },
+            { name: "Pleated chino trouser", price: 58 },
+            { name: "Penny loafer", price: 85 }
+          ]
+        },
+        500: {
+          items: [
+            { name: "Varsity-stripe blazer", price: 195 },
+            { name: "Argyle sweater vest", price: 68 },
+            { name: "Striped collared shirt", price: 52 },
+            { name: "Pleated chino trouser", price: 68 },
+            { name: "Penny loafer", price: 110 }
+          ]
+        }
+      }
+    }
+  };
+
+  const charGrid = document.getElementById("charGrid");
+  const landing = document.getElementById("landing");
+  const wardrobeView = document.getElementById("wardrobeView");
+  const backLink = document.getElementById("backLink");
+  const homeLink = document.getElementById("homeLink");
+  const budgetTabs = document.getElementById("budgetTabs");
+  const board = document.getElementById("board");
+  const resultLine = document.getElementById("resultLine");
+
+  let currentChar = null;
+  let currentBudget = 250;
+
+  Object.entries(DATA).forEach(([key, c]) => {
+    const card = document.createElement("button");
+    card.className = "char-card";
+    card.innerHTML = `
+      <div class="show">${c.show}</div>
+      <div class="name">${c.name}</div>
+      <div class="desc">${c.recipe}</div>
+    `;
+    card.addEventListener("click", () => openWardrobe(key));
+    charGrid.appendChild(card);
+  });
+
+  [150, 250, 500].forEach(tier => {
+    const tab = document.createElement("button");
+    tab.className = "budget-tab";
+    tab.textContent = "$" + tier;
+    tab.dataset.tier = tier;
+    tab.addEventListener("click", () => {
+      currentBudget = tier;
+      render();
+    });
+    budgetTabs.appendChild(tab);
+  });
+
+  function openWardrobe(key) {
+    currentChar = key;
+    currentBudget = 250;
+    landing.style.display = "none";
+    wardrobeView.classList.add("active");
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function closeWardrobe() {
+    wardrobeView.classList.remove("active");
+    landing.style.display = "block";
+    currentChar = null;
+  }
+
+  backLink.addEventListener("click", closeWardrobe);
+  homeLink.addEventListener("click", (e) => { e.preventDefault(); closeWardrobe(); });
+
+  function render() {
+    if (!currentChar) return;
+    const c = DATA[currentChar];
+    const tierData = c.tiers[currentBudget];
+
+    document.getElementById("wShow").textContent = c.show;
+    document.getElementById("wName").textContent = "Inspired by " + c.name;
+    document.getElementById("wRecipe").textContent = c.recipe;
+    document.getElementById("fitText").textContent = c.fit;
+
+    document.querySelectorAll(".budget-tab").forEach(t => {
+      t.classList.toggle("active", Number(t.dataset.tier) === currentBudget);
+    });
+
+    const total = tierData.items.reduce((sum, i) => sum + i.price, 0);
+    resultLine.textContent = tierData.items.length + " pieces that work together. $" + total + ".";
+
+    board.innerHTML = "";
+    tierData.items.forEach(item => {
+      const card = document.createElement("a");
+      card.className = "piece-card";
+      card.href = "#";
+      card.addEventListener("click", (e) => e.preventDefault());
+      card.innerHTML = `
+        <div class="piece-swatch">${item.name}</div>
+        <div class="piece-body">
+          <div class="piece-name">${item.name}</div>
+          <div class="piece-price">$${item.price}</div>
+          <div class="piece-stock">Still in stock</div>
+        </div>
+      `;
+      board.appendChild(card);
+    });
+  }
+</script>
+
+</body>
+</html>
